@@ -1,12 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Gam415Projectile.h"
-#include "Gam415Character.h"
+
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
-#include <Kismet/GameplayStatics.h>
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+
 
 AGam415Projectile::AGam415Projectile() 
 {
@@ -38,7 +41,21 @@ AGam415Projectile::AGam415Projectile()
 	ProjectileMovement->bShouldBounce = true;
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	InitialLifeSpan = 1.0f;
+}
+
+void AGam415Projectile::BeginPlay()
+{
+	Super::BeginPlay();
+	// Creates random color 
+	randColor = FLinearColor(UKismetMathLibrary::RandomFloatInRange(0.f, 1.f), UKismetMathLibrary::RandomFloatInRange(0.f, 1.f), UKismetMathLibrary::RandomFloatInRange(0.f, 1.f), 1.f);
+
+	// Creates and sets material to projMat
+	dmiMat = UMaterialInstanceDynamic::Create(projMat, this);
+	// Assigns new ball mesh with dmiMat
+	ballMesh->SetMaterial(0, dmiMat);
+	// Sets dmiMat to random color
+	dmiMat->SetVectorParameterValue("ProjColor", randColor);
 }
 
 void AGam415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -53,20 +70,19 @@ void AGam415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 	if (OtherActor != nullptr)
 	{
-		// Generate a random float between 0 and 1 for the X component of the color
-		float ranNumX = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
-
-		// Generate a random float between 0 and 1 for the Y component of the color
-		float ranNumY = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
-
-		// Generate a random float between 0 and 1 for the Z component of the color
-		float ranNumZ = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+		if (colorP)
+		{
+			// Gets random color if colorP is active and destroys ball when interacted with an object
+			UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAttached(colorP, HitComp, NAME_None, FVector(-20.f, 0.f, 0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
+			particleComp->SetNiagaraVariableLinearColor(FString("RandomColor"), randColor);
+			ballMesh->DestroyComponent();
+			CollisionComp->BodyInstance.SetCollisionProfileName("NoCollision");
+		}
 
 		// Generate a random float between 0 and 3 for the frame number
 		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
 
-		// Create a FVector4 to represent a random color with the alpha component set to 1
-		FVector4 randColor = FVector4(ranNumX, ranNumY, ranNumZ, 1.f);
+		
 
 		// Spawn a decal at the location of the hit, with a random size between 20 and 40 units, and with the normal of the hit location
 		auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), baseMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
