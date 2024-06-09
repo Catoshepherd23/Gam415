@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "PerlinProcTerrain.h"
 
 
 AGam415Projectile::AGam415Projectile() 
@@ -95,5 +96,12 @@ void AGam415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 		// Set the 'Frame' parameter of the material instance to the randomly generated frame number
 		MatInstance->SetScalarParameterValue("Frame", frameNum);
+
+		APerlinProcTerrain* procTerrain = Cast<APerlinProcTerrain>(OtherActor);
+
+		if (procTerrain)
+		{
+			procTerrain->AlterMesh(Hit.ImpactPoint);
+		}
 	}
 }
