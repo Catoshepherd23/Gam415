@@ -27,6 +27,7 @@ void AProcPlane::PostActorCreated()
 {
 	Super::PostActorCreated();
 	CreateMesh();
+	// Sets material of procedural mesh if PlaneMat is active
 	if (PlaneMat)
 	{
 		procMesh->SetMaterial(0, PlaneMat);
@@ -52,6 +53,7 @@ void AProcPlane::Tick(float DeltaTime)
 
 void AProcPlane::CreateMesh()
 {
+	// Creates new mesh section that are specified by the variables
 	procMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UV0, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 }
 

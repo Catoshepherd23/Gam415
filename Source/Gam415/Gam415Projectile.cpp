@@ -97,10 +97,12 @@ void AGam415Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		// Set the 'Frame' parameter of the material instance to the randomly generated frame number
 		MatInstance->SetScalarParameterValue("Frame", frameNum);
 
+		// Attempts to cast the otheractor to APerlinProcTerrain Type
 		APerlinProcTerrain* procTerrain = Cast<APerlinProcTerrain>(OtherActor);
 
 		if (procTerrain)
 		{
+			// Passes impact point of hit as argument to AlterMesh
 			procTerrain->AlterMesh(Hit.ImpactPoint);
 		}
 	}

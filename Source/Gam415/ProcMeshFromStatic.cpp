@@ -46,9 +46,11 @@ void AProcMeshFromStatic::Tick(float DeltaTime)
 
 void AProcMeshFromStatic::GetMeshData()
 {
+	// Gets static mesh from base mesh component
 	UStaticMesh* mesh = baseMesh->GetStaticMesh();
 	if (mesh)
 	{
+		// Extracts mes data from static mesh using Kismet
 		UKismetProceduralMeshLibrary::GetSectionFromStaticMesh(mesh, 0, 0, Vertices, Triangles, Normals, UV0, Tangents);
 		procMesh->UpdateMeshSection(0, Vertices, Normals, UV0, UpVertexColors, Tangents);
 		CreateMesh();
@@ -59,6 +61,7 @@ void AProcMeshFromStatic::CreateMesh()
 {
 	if (baseMesh)
 	{
+		// Creates new mesh section 
 		procMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, UpVertexColors, Tangents, true);
 	}
 }
