@@ -71,8 +71,8 @@ void ACubeDMIClass::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, class AA
 			// Checks to see if colorP is active and changes the particleComp to random color
 			if (colorP)
 			{
-				UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAttached(colorP, OtherComp, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
-				particleComp->SetNiagaraVariableLinearColor(FString("RandColor"), randColor);
+				//UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAttached(colorP, OtherComp, NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
+				//particleComp->SetNiagaraVariableLinearColor(FString("RandColor"), randColor);
 			}
 		}
 	}
